@@ -1,0 +1,24 @@
+name: Update IP lists
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/workflows/scripts/update.py
+      - name: Commit changes
+        run: |
+          git add ipv4.txt ipv6.txt
+          git diff --cached --quiet && exit 0
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m "Update Bunny IP lists"
+          git push
